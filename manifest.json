@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Google Sheets Tab Search",
+  "version": "1.0",
+  "description": "Adds a search box to the 'All sheets' menu in Google Sheets.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://docs.google.com/spreadsheets/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ]
+}

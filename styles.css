@@ -1,0 +1,22 @@
+/* Stile della casella di ricerca iniettata */
+.my-sheet-search-input {
+    width: 90%;
+    margin: 5px 5%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+    z-index: 10000;
+}
+
+.my-sheet-search-input:focus {
+    border: 1px solid #1a73e8;
+    box-shadow: 0 0 0 1px #1a73e8;
+}
+
+/* Classe per nascondere gli elementi non corrispondenti */
+.hidden-by-search {
+    display: none !important;
+}

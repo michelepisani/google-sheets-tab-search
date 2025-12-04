@@ -1,12 +1,15 @@
-// content.js - Versione Produzione (Clean)
+// content.js - Versione 12.1 (Fix Focus Automatico)
 
 // Ascolto del click in fase di cattura
 document.addEventListener('mousedown', function(e) {
-    // Verifica se il click è avvenuto dentro il pulsante "Tutti i fogli"
-    const btn = e.target.closest('.docs-sheet-all-button');
+    // Verifica se il click è avvenuto dentro il pulsante "Tutti i fogli" (classe o attributi)
+    const target = e.target;
+    const btn = target.closest('.docs-sheet-all-button') || 
+                target.closest('[data-tooltip="Tutti i fogli"]') ||
+                target.closest('[aria-label="Tutti i fogli"]');
     
     if (btn) {
-        // Proviamo a cercare il menu in 3 momenti diversi per intercettarlo appena appare
+        // Proviamo a cercare il menu in 3 momenti diversi
         setTimeout(() => hijackMenu(), 50);
         setTimeout(() => hijackMenu(), 150);
         setTimeout(() => hijackMenu(), 300);
@@ -14,7 +17,6 @@ document.addEventListener('mousedown', function(e) {
 }, true); 
 
 function hijackMenu() {
-    // Se abbiamo già creato la replica, ci fermiamo
     if (document.getElementById('sheet-search-replica')) return;
 
     // Cerca il menu originale visibile
@@ -45,7 +47,7 @@ function createReplicaMenu(realMenu) {
     const replica = document.createElement('div');
     replica.id = 'sheet-search-replica';
     
-    // Stile Replica (identico all'originale)
+    // Stile Replica
     Object.assign(replica.style, {
         position: 'fixed',
         left: `${rect.left}px`,
@@ -73,7 +75,7 @@ function createReplicaMenu(realMenu) {
 
     const input = document.createElement('input');
     input.type = 'text';
-    input.placeholder = '🔍 Search sheets...';
+    input.placeholder = '🔍 Cerca tab...'; // O 'Search sheets...' se hai messo inglese
     Object.assign(input.style, {
         width: '100%',
         padding: '8px',
@@ -124,7 +126,6 @@ function createReplicaMenu(realMenu) {
             e.stopPropagation();
             closeReplica();
             
-            // Trigger su originale
             const opts = {bubbles: true, cancelable: true, view: window};
             origItem.dispatchEvent(new MouseEvent('mousedown', opts));
             origItem.dispatchEvent(new MouseEvent('mouseup', opts));
@@ -137,8 +138,15 @@ function createReplicaMenu(realMenu) {
     replica.appendChild(listContainer);
     document.body.appendChild(replica);
 
-    // Focus
-    input.focus();
+    // --- FOCUS AGGRESSIVO (La modifica è qui) ---
+    // Proviamo a dare il focus ripetutamente per vincere contro Google Sheets
+    input.focus(); // Tentativo 1 immediato
+    setTimeout(() => input.focus(), 50);  // Tentativo 2
+    setTimeout(() => {
+        input.focus();
+        // Controllo finale: se non ha il focus, forza un ultima volta
+        if (document.activeElement !== input) input.focus();
+    }, 150); // Tentativo 3
 
     // --- Logica Filtro ---
     input.addEventListener('input', (e) => {
